@@ -1,0 +1,18 @@
+#
+# this is your module manifest and used by Titanium
+# during compilation, packaging, distribution, etc.
+#
+version: 0.1
+apiversion: 2
+description: My module
+author: Your Name
+license: Specify your license
+copyright: Copyright (c) 2012 by Your Company
+
+
+# these should not be edited
+name: publishinstall
+moduleid: com.facebook.publishinstall
+guid: 71f75837-4c30-48ca-b240-d10f5d8b1905
+platform: android
+minsdk: 2.1.4.GA
