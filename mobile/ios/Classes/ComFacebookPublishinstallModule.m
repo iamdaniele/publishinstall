@@ -90,10 +90,7 @@
   ENSURE_UI_THREAD_1_ARG(args);
   if (args) {
     args = (NSString *)[args objectAtIndex:0];
-    [FBSettings setAppID:args];
   }
-  NSLog(@"app id: %@", args);
-  NSLog(@"app id (FBSettings): %@", [FBSettings appID]);
   
   if (args == nil) {
     NSLog(@"No app id provided, nothing to do.");

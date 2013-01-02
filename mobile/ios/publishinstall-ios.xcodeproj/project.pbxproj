@@ -227,7 +227,7 @@
 				DSTROOT = /tmp/ComFacebookPublishinstall.dst;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
-					"\"$(SRCROOT)/../../Downloads/facebook-ios-sdk-master/build\"",
+					"~/Documents/FacebookSDK",
 				);
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_OPTIMIZATION_LEVEL = 0;
@@ -278,7 +278,7 @@
 				DSTROOT = /tmp/ComFacebookPublishinstall.dst;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
-					"\"$(SRCROOT)/../../Downloads/facebook-ios-sdk-master/build\"",
+					"~/Documents/FacebookSDK",
 				);
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_MODEL_TUNING = G5;
