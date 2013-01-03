@@ -2,12 +2,12 @@
 # this is your module manifest and used by Titanium
 # during compilation, packaging, distribution, etc.
 #
-version: 0.1
+version: 0.7
 apiversion: 2
-description: My module
-author: Your Name
-license: Specify your license
-copyright: Copyright (c) 2012 by Your Company
+description: Facebook Mobile App Install Module
+author: Facebook, Inc.
+license: Facebook License
+copyright: Copyright 2013 Facebook, Inc.
 
 
 # these should not be edited
