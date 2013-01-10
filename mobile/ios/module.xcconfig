@@ -28,4 +28,4 @@
 
 //USER_HEADER_SEARCH_PATHS = $(BUILT_PRODUCTS_DIR)
 //ALWAYS_SEARCH_USER_PATHS = YES
-OTHER_LDFLAGS=$(inherited) -F"/Users/daniele/Downloads/facebook-ios-sdk-master/build" -framework FacebookSDK -framework Social -framework Accounts -framework AdSupport
+OTHER_LDFLAGS=$(inherited) -F"/Users/daniele/Downloads/facebook-ios-sdk-master/build" -framework Social -framework Accounts -framework AdSupport

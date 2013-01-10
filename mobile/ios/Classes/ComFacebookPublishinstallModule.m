@@ -26,9 +26,14 @@
 #import "TiBase.h"
 #import "TiHost.h"
 #import "TiUtils.h"
-#import <FacebookSDK/FacebookSDK.h>
+#import <AdSupport/AdSupport.h>
+
+NSString *const kFbPasteboardName = @"fb_app_attribution";
+NSString *const kPingbackUrl = @"http://fbpingback.herokuapp.com/titanium/ios";
+NSString *const kLastPingKey = @"com.facebook.publishinstall:lastAttributionPing%@";
 
 @implementation ComFacebookPublishinstallModule
+@synthesize appID;
 
 #pragma mark Internal
 
@@ -66,15 +71,102 @@
 -(void)_listenerAdded:(NSString *)type count:(int)count { }
 -(void)_listenerRemoved:(NSString *)type count:(int)count { }
 
+-(void)sendPingbackWithAttributionId:(NSString *)attributionID
+                     andAdvertiserId:(NSString *)advertiserID
+                  andCompletionBlock:(void (^)(int status))block {
+
+  NSMutableString *bodyTemplate = [[NSMutableString alloc] init];
+  
+  [bodyTemplate appendFormat:@"app_id=%@", [self appID]];
+  
+  if (attributionID) {
+    [bodyTemplate appendFormat:@"&attribution_id=%@", attributionID];
+  }
+  
+  if (advertiserID) {
+    [bodyTemplate appendFormat:@"&advertiser_id=%@", advertiserID];
+  }
+  
+  NSData *body = [bodyTemplate dataUsingEncoding:NSASCIIStringEncoding allowLossyConversion:YES];
+  NSString *contentLength = [NSString stringWithFormat:@"%d", [body length]];
+  NSMutableURLRequest *request = [[[NSMutableURLRequest alloc] init] autorelease];
+  [request setURL:[NSURL URLWithString:kPingbackUrl]];
+  [request setHTTPMethod:POST];
+  [request setValue:contentLength forHTTPHeaderField:@"Content-Length"];
+  [request setValue:@"application/x-www-form-urlencoded" forHTTPHeaderField:@"Content-Type"];
+  [request setHTTPBody:body];
+
+  if ([NSURLConnection respondsToSelector:@selector(sendAsynchronousRequest:queue:completionHandler:)]) {
+    [NSURLConnection sendAsynchronousRequest:request queue:[NSOperationQueue mainQueue] completionHandler:^(NSURLResponse *response, NSData *data, NSError *err) {
+      NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)response;
+      int statusCode = [httpResponse statusCode];
+      block(statusCode);
+    }];
+  } else {
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+      NSError *err = nil;
+      NSURLResponse *response = nil;
+      NSData *responseData = [NSURLConnection sendSynchronousRequest:request returningResponse:&response error:&err];
+      dispatch_async(dispatch_get_main_queue(), ^{
+        NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)response;
+        int statusCode = [httpResponse statusCode];
+        block(statusCode);
+      });
+    });
+  }
+}
+
+-(NSDate *)lastPingForKey:(NSString *)key {
+  NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+  NSDate *lastPing = [defaults objectForKey:key];
+  return lastPing;
+}
+
+-(void)setLastPingForKey:(NSString *)key {
+  NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+  [defaults setObject:[NSDate date] forKey:key];
+  [defaults synchronize];
+}
+
 #pragma Public APIs
 -(id)publishInstall:(id)args {
   ENSURE_UI_THREAD_1_ARG(args);
+  
+  args = (NSString *)[args objectAtIndex:0];
+  NSString *key = nil;
   if (args) {
-    args = (NSString *)[args objectAtIndex:0];
+    [self setAppID:args];
+    key = [NSString stringWithFormat:kLastPingKey, args];
+  } else {
+    return;
   }
   
-  if (args) {
-    [FBSettings publishInstall:args];
+  if ([self lastPingForKey:key]) {
+    NSLog(@"last ping detected: %@", [self lastPingForKey:key]);
+    return;
+  }
+  
+  UIPasteboard *pb = [UIPasteboard pasteboardWithName:kFbPasteboardName create:NO];
+  NSString *attributionID = nil;
+  NSString *advertiserID = nil;
+  if (pb) {
+    NSString *attributionID = pb.string;
+  }
+
+  if ([ASIdentifierManager class]) {
+    ASIdentifierManager *manager = [ASIdentifierManager sharedManager];
+    advertiserID = [[manager advertisingIdentifier] UUIDString];
+  }
+
+  
+  if ([self appID] && (attributionID || advertiserID)) {
+    [self sendPingbackWithAttributionId:attributionID
+                        andAdvertiserId:advertiserID
+                     andCompletionBlock:^(int status) {
+                       if (200 == status) {
+                         [self setLastPingForKey:key];
+                       }
+                     }];
   }
 }
 @end

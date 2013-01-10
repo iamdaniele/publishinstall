@@ -24,8 +24,10 @@
  */
 #import "TiModule.h"
 
+#define POST @"POST"
 @interface ComFacebookPublishinstallModule : TiModule 
 {
 }
+@property (assign,nonatomic) NSString *appID;
 
 @end
