@@ -9,6 +9,5 @@
 	<classpathentry kind="lib" path="/Users/daniele/Library/Application Support/Titanium/mobilesdk/osx/2.1.4.GA/android/js.jar"/>
 	<classpathentry kind="lib" path="/Users/daniele/Library/Application Support/Titanium/mobilesdk/osx/2.1.4.GA/android/kroll-common.jar"/>
 	<classpathentry kind="lib" path="/Users/daniele/Library/Application Support/Titanium/mobilesdk/osx/2.1.4.GA/android/kroll-apt.jar"/>
-	<classpathentry kind="lib" path="/Users/daniele/Downloads/facebook-android-sdk-master/facebook/bin/facebooksdk.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
