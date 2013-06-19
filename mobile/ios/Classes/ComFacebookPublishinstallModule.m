@@ -117,6 +117,7 @@ NSString *const kLastPingKey = @"com.facebook.publishinstall:lastAttributionPing
 }
 
 -(NSDate *)lastPingForKey:(NSString *)key {
+
   NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
   NSDate *lastPing = [defaults objectForKey:key];
   return lastPing;
@@ -130,8 +131,6 @@ NSString *const kLastPingKey = @"com.facebook.publishinstall:lastAttributionPing
 
 #pragma Public APIs
 -(id)publishInstall:(id)args {
-  ENSURE_UI_THREAD_1_ARG(args);
-  
   args = (NSString *)[args objectAtIndex:0];
   NSString *key = nil;
   if (args) {
@@ -142,7 +141,6 @@ NSString *const kLastPingKey = @"com.facebook.publishinstall:lastAttributionPing
   }
   
   if ([self lastPingForKey:key]) {
-    NSLog(@"last ping detected: %@", [self lastPingForKey:key]);
     return;
   }
   
