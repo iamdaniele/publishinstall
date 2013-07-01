@@ -28,6 +28,7 @@ import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 import org.appcelerator.kroll.KrollModule;
 import org.appcelerator.kroll.annotations.Kroll;
+import org.appcelerator.kroll.common.Log;
 import org.appcelerator.titanium.TiApplication;
 
 import android.content.ContentResolver;
@@ -53,14 +54,18 @@ public class PublishinstallModule extends KrollModule {
 	}
 	
 	private static String getAttributionId() {
-		ContentResolver contentResolver = TiApplication.getInstance().getContentResolver();
-		String[] projection = {ATTRIBUTION_ID_COLUMN_NAME};
-		Cursor c = contentResolver.query(ATTRIBUTION_ID_CONTENT_URI, projection, null, null, null);
-		if (c == null || !c.moveToFirst()) {
-			return null;
+		try {
+			ContentResolver contentResolver = TiApplication.getInstance().getContentResolver();
+			String[] projection = {ATTRIBUTION_ID_COLUMN_NAME};
+			Cursor c = contentResolver.query(ATTRIBUTION_ID_CONTENT_URI, projection, null, null, null);
+			if (c == null || !c.moveToFirst()) {
+				return "";
+			}
+			String attributionId = c.getString(c.getColumnIndex(ATTRIBUTION_ID_COLUMN_NAME));
+			return attributionId;
+		} catch (Exception e) {
+			return "";
 		}
-		String attributionId = c.getString(c.getColumnIndex(ATTRIBUTION_ID_COLUMN_NAME));
-		return attributionId;
 	}
 	
 	@Kroll.onAppCreate
@@ -94,14 +99,14 @@ public class PublishinstallModule extends KrollModule {
 			return;
 		}
 		
-		if (getLastPing(appId) != null) {
+		if (getLastPing(appId) == null) {
 			return;
 		}
-		
+
 		ArrayList<NameValuePair> body = new ArrayList<NameValuePair>();
 		body.add(new BasicNameValuePair("app_id", appId));
 		body.add(new BasicNameValuePair("attribution_id", attributionId));
-		
+
 		Handler handler = new Handler() {
 			public void handleMessage(Message message) {
 				if (message.what == AsyncRequest.SUCCESS) {
@@ -111,6 +116,6 @@ public class PublishinstallModule extends KrollModule {
 		};
 		
 		new AsyncRequest(PINGBACK_URL, body, handler);
-	}	
+	}		
 }
 
