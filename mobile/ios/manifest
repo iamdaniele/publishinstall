@@ -2,7 +2,7 @@
 # this is your module manifest and used by Titanium
 # during compilation, packaging, distribution, etc.
 #
-version: 0.8
+version: 0.9
 apiversion: 2
 description: Facebook Mobile App Install Module
 author: Facebook, Inc.
@@ -15,4 +15,4 @@ name: tifb
 moduleid: com.facebook.publishinstall
 guid: ac06d854-3548-4de1-bfaf-2267c6b44fbc
 platform: iphone
-minsdk: 2.1.4.GA
+minsdk: 3.2.2.GA
